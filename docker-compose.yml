@@ -1,25 +1,26 @@
 version: "3.7"
 services:
   docker_model:
-    build: $PWD/containers/default
-    container_name: docker_model_default
+    build: $PWD/containers/prosody
+    container_name: prosody
     working_dir: /app
     volumes:
-      - $PWD/containers/default/volume:/app
+      - $PWD/containers/prosody/volume:/app
     ##You can set environment variables here!
     # environment: 
     #   - ENV_VAR_NAME: ENV_VAR_VALUE  
     ##Is possible to open ports too (EXTERNAL : INTERNAL)
-    # ports: 
-    #   - 8000:80
+    ports: 
+      - 5222:5222
+      - 5269:5269
     ##If you need, this container will only start after another container gets up.
     # depends_on: 
     #   - SERVICE_NAME
     ##By default, a default network will be created, use the same network with other containers to have comunication between them
     networks: 
-      - default
+      - prosody
 
 networks:
-  default:
+  prosody:
     external:
-      name: docker_model
+      name: prosody

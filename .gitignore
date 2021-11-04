@@ -1,0 +1,4 @@
+temp
+containers/prosody/volume/prosody/data/*
+containers/prosody/volume/tor/data/*
+verifications/*
