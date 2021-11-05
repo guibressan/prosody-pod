@@ -13,6 +13,6 @@ case "$1" in
     docker network rm prosody
   ;;
 
-  *) printf "Usage: [up|down|help]"
+  *) printf "Usage: [up|down|help]\n"
 
 esac
