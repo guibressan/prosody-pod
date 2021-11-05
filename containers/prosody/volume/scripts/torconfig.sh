@@ -1,18 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
-
-
-if [ -e /app/verifications/is_onion_set ]
-then
+if [ -e /app/verifications/is_onion_set ]; then
     echo "Hidden service already setted, restoring files to container."
-    
+
 
     service tor stop
 
     mkdir /var/lib/tor/xmpp/
     chown debian-tor:debian-tor /var/lib/tor/xmpp/
     chmod 700 /var/lib/tor/xmpp/
-    
+
     cp /app/tor/data/lib/xmpp/hostname /var/lib/tor/xmpp/
     chown debian-tor:debian-tor /var/lib/tor/xmpp/hostname
     chmod 600 /var/lib/tor/xmpp/hostname
@@ -35,7 +32,7 @@ then
 
 else
     echo "Creating Hidden Service"
-    
+
     service tor stop
 
     # Hidden Services
@@ -53,7 +50,7 @@ else
     mkdir /app/tor/data/etc
     cp -r /var/lib/tor/* /app/tor/data/lib/
     cp /etc/tor/torrc /app/tor/data/etc/
-    
+
     touch /app/verifications/is_onion_set
     echo "Hidden Service created"
 fi

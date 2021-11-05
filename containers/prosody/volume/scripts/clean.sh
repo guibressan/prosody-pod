@@ -1,5 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
-sudo rm -r containers/prosody/volume/prosody/data
-sudo rm -r containers/prosody/volume/tor/data
-sudo rm -r containers/prosody/volume/verifications/*
+sudo rm -rfv containers/prosody/volume/prosody/data
+sudo rm -rfv containers/prosody/volume/tor/data
+sudo rm -rfv containers/prosody/volume/verifications/*

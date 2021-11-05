@@ -1,16 +1,14 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
-mkdir /app/prosody
-mkdir /app/prosody/data 
-mkdir /app/prosody/data/etc 
-mkdir /app/prosody/data/lib 
-mkdir /app/prosody/data/usr
+mkdir -p /app/prosody/data/etc
+mkdir -p /app/prosody/data/lib
+mkdir -p /app/prosody/data/usr
 
-rm -r /app/prosody/data/etc/*
-rm -r /app/prosody/data/lib/*
-rm -r /app/prosody/data/usr/*
-cp -r /etc/prosody/ /app/prosody/data/etc 
-cp -r /var/lib/prosody/ /app/prosody/data/lib 
+rm -rfv /app/prosody/data/etc/*
+rm -rfv /app/prosody/data/lib/*
+rm -rfv /app/prosody/data/usr/*
+cp -r /etc/prosody/ /app/prosody/data/etc
+cp -r /var/lib/prosody/ /app/prosody/data/lib
 cp -r /usr/lib/prosody/ /app/prosody/data/usr
 
 touch /app/prosody/data/backup.log
