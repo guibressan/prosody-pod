@@ -1,4 +1,6 @@
-# Docker Prosody: A Prosody XMPP server ambient
+# Docker Prosody: A Prosody XMPP plug and play server
+## This project implements the Prosody XMPP server with Tor routing by default
+
 
 * To run this project, you will need to have docker and docker-compose installed in your Linux or Mac OS system
 
