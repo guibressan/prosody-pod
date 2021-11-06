@@ -10,9 +10,8 @@ services:
     # environment: 
     #   - ENV_VAR_NAME: ENV_VAR_VALUE  
     ##Is possible to open ports too (EXTERNAL : INTERNAL)
-    ports: 
-      - 5222:5222
-      - 5269:5269
+    # ports: 
+    #   - 5222:5222
     ##If you need, this container will only start after another container gets up.
     # depends_on: 
     #   - SERVICE_NAME
