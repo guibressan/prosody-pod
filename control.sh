@@ -13,6 +13,10 @@ case "$1" in
     docker network rm prosody
   ;;
 
-  *) printf "Usage: [up|down|help]\n"
+  clean)
+    ./containers/prosody/volume/scripts/clean.sh
+  ;;
+
+  *) printf "Usage: [up|down|clean|help]\n"
 
 esac
