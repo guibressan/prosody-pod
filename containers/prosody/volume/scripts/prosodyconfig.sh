@@ -34,6 +34,17 @@ if [ -e /app/verifications/is_prosody_set ]; then
 
 ' >> /etc/crontab
 
+    #Verifying if prosody started
+    printf "\n\n"
+    while [ $(( 1 == 1 )) ]; do 
+        if [ -e /var/log/prosody/prosody.log ]; then
+            sleep 1
+            break
+        else
+            sleep 1
+        fi
+    done
+
     printf "\n\n\nThe hostname of your Prosody server is %s$hostname and the port is 5222\n\n\n\n"
 
 else
