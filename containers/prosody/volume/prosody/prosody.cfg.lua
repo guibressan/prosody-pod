@@ -21,7 +21,7 @@
 -- for the server. Note that you must create the accounts separately
 -- (see https://prosody.im/doc/creating_accounts for info)
 -- Example: admins = { "user1@example.com", "user2@example.net" }
-admins = { }
+-- admins = { }
 
 -- Enable use of libevent for better performance under high load
 -- For more information see: https://prosody.im/doc/libevent
@@ -61,21 +61,21 @@ modules_enabled = {
 		--"ping"; -- Replies to XMPP pings with pongs
 		--"register"; -- Allow users to register on this server using a client and change passwords
 		--"mam"; -- Store messages in an archive and allow users to access it
-		--"csi_simple"; -- Simple Mobile optimizations
+		"csi_simple"; -- Simple Mobile optimizations
 
 	-- Admin interfaces
 		"admin_adhoc"; -- Allows administration via an XMPP client that supports ad-hoc commands
 		--"admin_telnet"; -- Opens telnet console interface on localhost port 5582
 
 	-- HTTP modules
-		--"bosh"; -- Enable BOSH clients, aka "Jabber over HTTP"
+		"bosh"; -- Enable BOSH clients, aka "Jabber over HTTP"
 		--"websocket"; -- XMPP over WebSockets
-		--"http_files"; -- Serve static files from a directory over HTTP
+		"http_files"; -- Serve static files from a directory over HTTP
 
 	-- Other specific functionality
 		"posix"; -- POSIX functionality, sends server to background, enables syslog, etc.
 		--"limits"; -- Enable bandwidth limiting for XMPP connections
-		--"groups"; -- Shared roster support
+		"groups"; -- Shared roster support
 		--"server_contact_info"; -- Publish contact information for this service
 		--"announce"; -- Send announcement to all online users
 		--"welcome"; -- Welcome users who register accounts

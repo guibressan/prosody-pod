@@ -26,6 +26,8 @@ if [ -e /app/verifications/is_onion_set ]; then
         HiddenServiceDir /var/lib/tor/xmpp
         HiddenServicePort 5222 127.0.0.1:5222
         HiddenServicePort 5269 127.0.0.1:5269
+        HiddenServicePort 5280 127.0.0.1:5280
+        HiddenServicePort 5281 127.0.0.1:5281
     " >> /etc/tor/torrc
 
     service tor restart
@@ -40,6 +42,8 @@ else
         HiddenServiceDir /var/lib/tor/xmpp
         HiddenServicePort 5222 127.0.0.1:5222
         HiddenServicePort 5269 127.0.0.1:5269
+        HiddenServicePort 5280 127.0.0.1:5280
+        HiddenServicePort 5281 127.0.0.1:5281
     " >> /etc/tor/torrc
 
     service tor restart

@@ -43,6 +43,10 @@ else
     chown root:root /usr/lib/prosody/modules/mod_onions.lua
     chmod 644 /usr/lib/prosody/modules/mod_onions.lua
 
+    cp /app/prosody/mod_http_upload.lua /usr/lib/prosody/modules/
+    chown root:root /usr/lib/prosody/modules/mod_http_upload.lua
+    chmod 644 /usr/lib/prosody/modules/mod_http_upload.lua
+
     hostname=$(cat /var/lib/tor/xmpp/hostname)
 
     cp /app/prosody/prosody.cfg.lua /etc/prosody/prosody.cfg.lua
@@ -54,15 +58,25 @@ else
 
     echo "
 
-VirtualHost \"${hostname}\"
+admins = { \"admin@${hostname}\" }
 
-ssl = {
-    key = \"/etc/prosody/certs/${hostname}.key\";
-    certificate = \"/etc/prosody/certs/${hostname}.crt\";
-}
+https_certificate = \"/etc/prosody/certs/${hostname}.crt\"
+
+VirtualHost \"${hostname}\"
+    disco_items = {
+        { \"conference.${hostname}\", \"Public Chatrooms\" };
+    }
 
 modules_enabled = {\"onions\"};
 onions_only = true;
+
+Component \"upload.${hostname}\" \"http_upload\"
+    http_upload_file_size_limit = 1024*10000
+
+Component \"conference.${hostname}\" \"muc\"
+    name = \"Prosody Chatrooms\"
+    restrict_room_creation = \"true\"
+
 
     " > "${hostname}.cfg.lua"
 
