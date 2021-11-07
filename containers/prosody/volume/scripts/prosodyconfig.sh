@@ -29,7 +29,7 @@ if [ -e /app/verifications/is_prosody_set ]; then
     prosodybackup
 
     echo '
-*/10 * * * *     root    prosodybackup
+0 0 * * *     root    prosodybackup
 #
 
 ' >> /etc/crontab
