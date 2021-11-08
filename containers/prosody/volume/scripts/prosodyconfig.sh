@@ -22,6 +22,10 @@ if [ -e /app/verifications/is_prosody_set ]; then
     chown -R root:prosody /etc/prosody
     #chmod -R 777 /etc/prosody
 
+    if [ -e /etc/prosody/conf.d/*localhost* ]; then
+        rm -rfv /etc/prosody/conf.avail/*localhost*
+        rm -rfv /etc/prosody/conf.d/*localhost*
+    fi    
 
     if [ -e /etc/prosody/certs/${hostname}.crt ]; then
         printf "\n\nSymlinks apparently ok!\n\n"
