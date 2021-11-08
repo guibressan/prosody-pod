@@ -207,7 +207,7 @@ certificates = "certs"
 -- Component definitions in their own config files. This line includes
 -- all config files in /etc/prosody/conf.d/
 
-VirtualHost "localhost"
+--VirtualHost "localhost"
 
 --VirtualHost "example.com"
 --	certificate = "/path/to/example.crt"

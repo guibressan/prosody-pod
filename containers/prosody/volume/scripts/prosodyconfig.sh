@@ -22,6 +22,22 @@ if [ -e /app/verifications/is_prosody_set ]; then
     chown -R root:prosody /etc/prosody
     #chmod -R 777 /etc/prosody
 
+
+    if [ -e /etc/prosody/certs/${hostname}.crt ]; then
+        printf "\n\nSymlinks apparently ok!\n\n"
+        sleep 1
+    else
+        printf "\n\nSymlinks broken, rebuilding...\n\n"
+        cd /etc/prosody/conf.d || exit 1
+        ln -s /etc/prosody/conf.avail/${hostname}.cfg.lua ${hostname}.cfg.lua
+
+        mkdir -p /etc/prosody/certs
+        cd /etc/prosody/certs || exit 1
+        ln -s /var/lib/prosody/${hostname}.crt ${hostname}.crt
+        ln -s /var/lib/prosody/${hostname}.key ${hostname}.key
+    fi
+
+
     service prosody restart
 
     cp /app/scripts/prosodybackup.sh /bin/prosodybackup
