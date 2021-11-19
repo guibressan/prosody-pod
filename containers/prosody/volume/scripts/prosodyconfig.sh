@@ -98,7 +98,7 @@ VirtualHost \"${hostname}\"
         { \"conference.${hostname}\", \"Public Chatrooms\" };
     }
 
-modules_enabled = {\"onions\"};
+modules_enabled = {\"onions\", \"register\"};
 onions_only = true;
 
 Component \"upload.${hostname}\" \"http_upload\"
