@@ -1,63 +1,90 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
+############################################################################################
+# TOR CONFIG AND SETUP FILE
+############################################################################################
+# Functions
 
-if [ -e /app/verifications/is_onion_set ]; then
-    echo "Hidden service already setted, restoring files to container."
+set_variables(){
+    readonly tor_path='/app/data/tor'
+    readonly hidden_service_path='/app/data/tor/prosody'
+}
 
+setup_hidden_service (){
+    # Exiting if tor is setted up
+    if [ -e ${hidden_service_path} ]; then
+        return 1
+    fi
 
-    service tor stop
-
-    mkdir /var/lib/tor/xmpp/
-    chown debian-tor:debian-tor /var/lib/tor/xmpp/
-    chmod 700 /var/lib/tor/xmpp/
-
-    cp /app/tor/data/lib/xmpp/hostname /var/lib/tor/xmpp/
-    chown debian-tor:debian-tor /var/lib/tor/xmpp/hostname
-    chmod 600 /var/lib/tor/xmpp/hostname
-
-    cp /app/tor/data/lib/xmpp/hs_ed25519_public_key  /var/lib/tor/xmpp/
-    chown debian-tor:debian-tor /var/lib/tor/xmpp/hs_ed25519_public_key
-    chmod 600 /var/lib/tor/xmpp/hs_ed25519_public_key
-
-    cp /app/tor/data/lib/xmpp/hs_ed25519_secret_key  /var/lib/tor/xmpp/
-    chown debian-tor:debian-tor /var/lib/tor/xmpp/hs_ed25519_secret_key
+    # Hidden service no setted up
+    printf 'Creating Hidden Service\n'
 
     # Hidden Services
-    echo "
-        HiddenServiceDir /var/lib/tor/xmpp
-        HiddenServicePort 5222 127.0.0.1:5222
-        HiddenServicePort 5269 127.0.0.1:5269
-        HiddenServicePort 5280 127.0.0.1:5280
-        HiddenServicePort 5281 127.0.0.1:5281
-    " >> /etc/tor/torrc
+    printf "
+HiddenServiceDir ${hidden_service_path}
+HiddenServicePort 5222 127.0.0.1:5222
+HiddenServicePort 5269 127.0.0.1:5269
+HiddenServicePort 5280 127.0.0.1:5280
+HiddenServicePort 5281 127.0.0.1:5281
+    \n" >> /etc/tor/torrc
 
-    service tor restart
+    return 0
+}
 
+set_tor_dir_permissions(){
+
+    chown -R debian-tor:debian-tor ${tor_path}
+
+    chown -R debian-tor:debian-tor ${hidden_service_path}/authorized_clients
+
+    chown debian-tor:debian-tor ${hidden_service_path}/
+    chmod 700 ${hidden_service_path}/
+
+    chown debian-tor:debian-tor ${hidden_service_path}/hostname
+    chmod 600 ${hidden_service_path}/hostname
+
+    chown debian-tor:debian-tor ${hidden_service_path}/hs_ed25519_public_key
+    chmod 600 ${hidden_service_path}/hs_ed25519_public_key
+
+    chown debian-tor:debian-tor ${hidden_service_path}/hs_ed25519_secret_key
+}
+
+restore_hidden_service (){
+    # Exiting if tor is not setted
+    if [ ! -e ${hidden_service_path} ]; then
+        return 1
+    fi
+
+    echo "Hidden service already setted, setting the permissions"
+
+    # Hidden Services
+    printf "
+HiddenServiceDir ${hidden_service_path}
+HiddenServicePort 5222 127.0.0.1:5222
+HiddenServicePort 5269 127.0.0.1:5269
+HiddenServicePort 5280 127.0.0.1:5280
+HiddenServicePort 5281 127.0.0.1:5281
+    \n" >> /etc/tor/torrc
+
+    set_tor_dir_permissions
+}
+
+############################################################################################
+# Code
+
+set_variables
+
+if setup_hidden_service; then
+    printf 'Hidden Service created\n'
 else
-    echo "Creating Hidden Service"
-
-    service tor stop
-
-    # Hidden Services
-    echo "
-        HiddenServiceDir /var/lib/tor/xmpp
-        HiddenServicePort 5222 127.0.0.1:5222
-        HiddenServicePort 5269 127.0.0.1:5269
-        HiddenServicePort 5280 127.0.0.1:5280
-        HiddenServicePort 5281 127.0.0.1:5281
-    " >> /etc/tor/torrc
-
-    service tor restart
-
-    mkdir /app/tor/
-    mkdir /app/tor/data
-    mkdir /app/tor/data/lib
-    mkdir /app/tor/data/etc
-    cp -r /var/lib/tor/* /app/tor/data/lib/
-    cp /etc/tor/torrc /app/tor/data/etc/
-
-    touch /app/verifications/is_onion_set
-    echo "Hidden Service created"
+    restore_hidden_service
 fi
+
+
+
+
+
+
+
 
 
 

@@ -1,4 +1,6 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
+
+RUN printf 'v2.1' > ~/version
 
 RUN apt update
 

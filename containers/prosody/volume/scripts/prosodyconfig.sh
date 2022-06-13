@@ -1,93 +1,57 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
+##############################################################################
+# Prosody Config File
 
-if [ -e /app/verifications/is_prosody_set ]; then
-    echo "Prosody service already setted, restoring files to container."
+##############################################################################
+# Variables
+readonly hostname=$(cat /app/data/tor/prosody/hostname)
+readonly data_path='/app/data/prosody'
 
-    hostname=$(cat /var/lib/tor/xmpp/hostname)
-
-    service prosody stop
-
-    rm -rf /var/lib/prosody/*
-    cp -r /app/prosody/data/lib/prosody/* /var/lib/prosody/
-    chown -R prosody:prosody /var/lib/prosody
-    #chmod -R 777 /var/lib/prosody
-
-    rm -rf /usr/lib/prosody/*
-    cp -r /app/prosody/data/usr/prosody/* /usr/lib/prosody/
-    chown -R root:prosody /usr/lib/prosody/
-    #chmod -R 777 /usr/lib/prosody/
-
-    rm -rf /etc/prosody/*
-    cp -r /app/prosody/data/etc/prosody/* /etc/prosody
-    chown -R root:prosody /etc/prosody
-    #chmod -R 777 /etc/prosody
-
-    if [ -e /etc/prosody/conf.d/*localhost* ]; then
-        rm -rfv /etc/prosody/conf.avail/*localhost*
-        rm -rfv /etc/prosody/conf.d/*localhost*
-    fi    
-
-    if [ -e /etc/prosody/certs/${hostname}.crt ]; then
-        printf "\n\nSymlinks apparently ok!\n\n"
-        sleep 1
-    else
-        printf "\n\nSymlinks broken, rebuilding...\n\n"
-        cd /etc/prosody/conf.d || exit 1
-        ln -s /etc/prosody/conf.avail/${hostname}.cfg.lua ${hostname}.cfg.lua
-
-        mkdir -p /etc/prosody/certs
-        cd /etc/prosody/certs || exit 1
-        ln -s /var/lib/prosody/${hostname}.crt ${hostname}.crt
-        ln -s /var/lib/prosody/${hostname}.key ${hostname}.key
-    fi
+##############################################################################
 
 
-    service prosody restart
+# rm -rf /var/lib/prosody/*
+# cp -r /app/prosody/data/lib/prosody/* /var/lib/prosody/
+# chown -R prosody:prosody /var/lib/prosody
 
-    cp /app/scripts/prosodybackup.sh /bin/prosodybackup
-    chmod +x /bin/prosodybackup
-    prosodybackup
+# rm -rf /usr/lib/prosody/*
+# cp -r /app/prosody/data/usr/prosody/* /usr/lib/prosody/
+# chown -R root:prosody /usr/lib/prosody/
 
-    echo '
-0 0 * * *     root    prosodybackup
-#
+# rm -rf /etc/prosody/*
+# cp -r /app/prosody/data/etc/prosody/* /etc/prosody
+# chown -R root:prosody /etc/prosody
 
-' >> /etc/crontab
+# Removing localhost config
+if [ -e /etc/prosody/conf.d/*localhost* ]; then
+    rm -rfv /etc/prosody/conf.avail/*localhost*
+    rm -rfv /etc/prosody/conf.d/*localhost*
+fi    
 
-    #Verifying if prosody started
-    printf "\n\n"
-    while [ $(( 1 == 1 )) ]; do 
-        if [ -e /var/log/prosody/prosody.log ]; then
-            sleep 1
-            break
-        else
-            sleep 1
-        fi
-    done
+# Copying modules
+cp /app/prosody/mod_onions.lua /usr/lib/prosody/modules/
+chown root:root /usr/lib/prosody/modules/mod_onions.lua
+chmod 644 /usr/lib/prosody/modules/mod_onions.lua
 
-    printf "\n\n\nThe hostname of your Prosody server is %s$hostname and the port is 5222\n\n\n\n"
+cp /app/prosody/mod_http_upload.lua /usr/lib/prosody/modules/
+chown root:root /usr/lib/prosody/modules/mod_http_upload.lua
+chmod 644 /usr/lib/prosody/modules/mod_http_upload.lua
 
-else
-    echo "Setting up prosody"
+# Setting up global prosody config
+/app/scripts/prosodyconfigfileset.sh
 
-    cp /app/prosody/mod_onions.lua /usr/lib/prosody/modules/
-    chown root:root /usr/lib/prosody/modules/mod_onions.lua
-    chmod 644 /usr/lib/prosody/modules/mod_onions.lua
+# Setting datadir into global prosody config
+printf "
+data_path = \"/app/data/prosody\"
+\n" >> /etc/prosody/prosody.cfg.lua
 
-    cp /app/prosody/mod_http_upload.lua /usr/lib/prosody/modules/
-    chown root:root /usr/lib/prosody/modules/mod_http_upload.lua
-    chmod 644 /usr/lib/prosody/modules/mod_http_upload.lua
+# Creating certificate symlink
+mkdir -p /etc/prosody/certs
+ln -s /app/data/certs/${hostname}/server.crt /etc/prosody/certs/${hostname}.crt
+ln -s /app/data/certs/${hostname}/server.key /etc/prosody/certs/${hostname}.key
 
-    hostname=$(cat /var/lib/tor/xmpp/hostname)
-
-    cp /app/prosody/prosody.cfg.lua /etc/prosody/prosody.cfg.lua
-    chown root:prosody /etc/prosody/prosody.cfg.lua
-    chmod 644 /etc/prosody/prosody.cfg.lua
-
-    cd /etc/prosody/conf.avail ||exit 1
-    touch "${hostname}".cfg.lua
-
-    echo "
+# Setting prosody hidden service host configuration
+printf "
 
 admins = { \"admin@${hostname}\" }
 
@@ -99,7 +63,7 @@ VirtualHost \"${hostname}\"
     }
 
 modules_enabled = {\"onions\", \"register\"};
-onions_only = true;
+onions_only = \"true\";
 
 Component \"upload.${hostname}\" \"http_upload\"
     http_upload_file_size_limit = 1024*10000
@@ -108,20 +72,9 @@ Component \"conference.${hostname}\" \"muc\"
     name = \"Prosody Chatrooms\"
     restrict_room_creation = \"true\"
 
+\n" > /etc/prosody/conf.avail/${hostname}.cfg.lua
 
-    " > "${hostname}.cfg.lua"
+# Setting hidden service host symlink
+ln -s /etc/prosody/conf.avail/${hostname}.cfg.lua /etc/prosody/conf.d/${hostname}.cfg.lua
 
-    cd /etc/prosody/conf.d || exit 1
 
-    ln -s /etc/prosody/conf.avail/"${hostname}".cfg.lua "${hostname}".cfg.lua
-
-    service prosody restart
-
-    cp /app/scripts/sslconfig.sh /bin/sslconfig
-    chmod +x /bin/sslconfig
-
-    cp /app/scripts/prosodybackup.sh /bin/prosodybackup
-    chmod +x /bin/prosodybackup
-
-    touch /app/verifications/is_prosody_set
-fi
