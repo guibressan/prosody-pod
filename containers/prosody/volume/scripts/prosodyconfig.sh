@@ -9,19 +9,6 @@ readonly data_path='/app/data/prosody'
 
 ##############################################################################
 
-
-# rm -rf /var/lib/prosody/*
-# cp -r /app/prosody/data/lib/prosody/* /var/lib/prosody/
-# chown -R prosody:prosody /var/lib/prosody
-
-# rm -rf /usr/lib/prosody/*
-# cp -r /app/prosody/data/usr/prosody/* /usr/lib/prosody/
-# chown -R root:prosody /usr/lib/prosody/
-
-# rm -rf /etc/prosody/*
-# cp -r /app/prosody/data/etc/prosody/* /etc/prosody
-# chown -R root:prosody /etc/prosody
-
 # Removing localhost config
 if [ -e /etc/prosody/conf.d/*localhost* ]; then
     rm -rfv /etc/prosody/conf.avail/*localhost*
@@ -49,6 +36,7 @@ data_path = \"/app/data/prosody\"
 mkdir -p /etc/prosody/certs
 ln -s /app/data/certs/${hostname}/server.crt /etc/prosody/certs/${hostname}.crt
 ln -s /app/data/certs/${hostname}/server.key /etc/prosody/certs/${hostname}.key
+chown -R prosody:prosody /etc/prosody/certs/*
 
 # Setting prosody hidden service host configuration
 printf "
@@ -77,4 +65,5 @@ Component \"conference.${hostname}\" \"muc\"
 # Setting hidden service host symlink
 ln -s /etc/prosody/conf.avail/${hostname}.cfg.lua /etc/prosody/conf.d/${hostname}.cfg.lua
 
-
+# Setting prosody data ownership
+chown -R prosody:prosody /app/data/prosody
