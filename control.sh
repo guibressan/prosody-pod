@@ -20,6 +20,13 @@ clean(){
   rm -r ./containers/prosody/volume/data
 }
 
+startContainers(){
+  if ! docker network ls | grep prosody; then 
+    docker network create -d bridge prosody ; 
+  fi
+
+  docker-compose up --build &
+}
 
 ##############################################################################
 # Menu
@@ -30,16 +37,12 @@ case "$1" in
 
     createDirectories
     setScriptsPermissions
-
-
-    docker network create -d bridge prosody
-
-    docker-compose up --build &
+    startContainers
+    
   ;;
 
   down)
     docker-compose down
-    docker network rm prosody
   ;;
 
   clean)
