@@ -49,19 +49,20 @@ HiddenServicePort 5269 127.0.0.1:5269
 HiddenServicePort 5280 127.0.0.1:5280
 HiddenServicePort 5281 127.0.0.1:5281
     \n" >> /etc/tor/torrc
-
-    set_tor_dir_permissions
 }
 
 ############################################################################################
 # Code
 
+set_tor_dir_permissions
+
 if setup_hidden_service; then
-    set_tor_dir_permissions
     printf 'Hidden Service created\n'
 else
     restore_hidden_service
 fi
+
+service tor start
 
 
 

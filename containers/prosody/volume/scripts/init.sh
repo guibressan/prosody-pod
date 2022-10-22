@@ -5,9 +5,7 @@
 # Start / install services
 
     # Setting up HiddenService
-    service tor stop
     /app/scripts/torconfig.sh
-    service tor start
     while [ ! -e /app/data/tor/prosody/hostname ]; do
         sleep 1
     done
