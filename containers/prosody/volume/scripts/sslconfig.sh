@@ -113,4 +113,5 @@ if [ ! -e ${cert_path}/server.key ] || [ ! -e ${cert_path}/server.crt ]; then
     -sha512 -extfile cert.conf
 fi
 
-
+# Setting Certs Ownership
+chown -R prosody:prosody ${certs_path}
