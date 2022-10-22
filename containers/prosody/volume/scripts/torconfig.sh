@@ -2,13 +2,12 @@
 ############################################################################################
 # TOR CONFIG AND SETUP FILE
 ############################################################################################
+
+# Constants
+readonly tor_path='/app/data/tor'
+readonly hidden_service_path='/app/data/tor/prosody'
+
 # Functions
-
-set_variables(){
-    readonly tor_path='/app/data/tor'
-    readonly hidden_service_path='/app/data/tor/prosody'
-}
-
 setup_hidden_service (){
     # Exiting if tor is setted up
     if [ -e ${hidden_service_path} ]; then
@@ -31,21 +30,7 @@ HiddenServicePort 5281 127.0.0.1:5281
 }
 
 set_tor_dir_permissions(){
-
     chown -R debian-tor:debian-tor ${tor_path}
-
-    chown -R debian-tor:debian-tor ${hidden_service_path}/authorized_clients
-
-    chown debian-tor:debian-tor ${hidden_service_path}/
-    chmod 700 ${hidden_service_path}/
-
-    chown debian-tor:debian-tor ${hidden_service_path}/hostname
-    chmod 600 ${hidden_service_path}/hostname
-
-    chown debian-tor:debian-tor ${hidden_service_path}/hs_ed25519_public_key
-    chmod 600 ${hidden_service_path}/hs_ed25519_public_key
-
-    chown debian-tor:debian-tor ${hidden_service_path}/hs_ed25519_secret_key
 }
 
 restore_hidden_service (){
@@ -71,9 +56,8 @@ HiddenServicePort 5281 127.0.0.1:5281
 ############################################################################################
 # Code
 
-set_variables
-
 if setup_hidden_service; then
+    set_tor_dir_permissions
     printf 'Hidden Service created\n'
 else
     restore_hidden_service
