@@ -1,44 +1,24 @@
 #!/usr/bin/env bash
-##############################################################################
-# Docker Prosody Init File
-##############################################################################
-# Start / install services
+####################
+set -e
+####################
+/app/scripts/tor_setup.sh
 
-    # Setting up HiddenService
-    /app/scripts/torconfig.sh
-    while [ ! -e /app/data/tor/prosody/hostname ]; do
-        sleep 1
-    done
-    hostname=$(cat /app/data/tor/prosody/hostname)
+hostname=$(su -c 'cat /app/data/tor/prosody/hostname' ${CONTAINER_USER})
 
-    # Setting up SSL
-    /app/scripts/sslconfig.sh ${hostname}
+su -c "/app/scripts/sslconfig.sh ${hostname}" ${CONTAINER_USER}
 
-    # Setting up Prosody
-    service prosody stop
-    /app/scripts/prosodyconfig.sh
-    service prosody start
+/app/scripts/prosody_setup.sh
 
-    # Watching prosody logs
-    ## "tail -f" will keep this container alive, if you want to watch some logfile, 
-    ##  you can change /dev/null to the path of the logfile that you want to watch
-    tail -f /var/log/prosody/* &
+su -c 'tail -f /var/log/prosody/*.log &' ${CONTAINER_USER}
+sleep 2
 
-    sleep 2
+printf "\nCongratulations, you're running your own Prosody XMPP Server!\n"
+sleep 1
+printf "Server Hostname: ${hostname} Port: 5222\n"
+sleep 1
+printf "To create the admin user just insert the following command: \n"
+printf "<docker exec -it prosody prosodyctl register admin ${hostname} password>\n"
+printf "\nTo create a new normal user just insert the same command, with another username instead of admin\n"
 
-    # Print some init messages
-    printf "\n\nCongratulations, you're running your own Prosody XMPP Server!\n"
-    sleep 1
-    printf "\nServer Hostname: ${hostname} Port: 5222\n"
-    sleep 1
-    printf "\nTo create the admin user just insert the following command: \n"
-    printf "<docker exec -it prosody prosodyctl register admin ${hostname} password>\n"
-    printf "\nTo create a new normal user just insert the same command, with another username instead of admin\n"
-
-    # Keep container running 
-    tail -f /dev/null
-
-
-
-
-
+while pidof lua5.4 > /dev/null; do sleep 60; done

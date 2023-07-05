@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
-##############################################################################
-# Docker Prosody Control File
-
-##############################################################################
-# Functions
-
+####################
+set -e
+####################
 createDirectories(){
   mkdir -p ./containers/prosody/volume/data
   mkdir -p ./containers/prosody/volume/data/verifications
@@ -13,7 +10,7 @@ createDirectories(){
 }
 
 setScriptsPermissions(){
-  chmod -R +x ./containers/prosody/volume/scripts/*.sh
+  chmod +x ./containers/prosody/volume/scripts/*.sh
 }
 
 clean(){
@@ -21,34 +18,31 @@ clean(){
 }
 
 startContainers(){
-  if ! docker network ls | grep prosody; then 
-    docker network create -d bridge prosody ; 
+  if ! docker network ls | grep prosody > /dev/null; then 
+    docker network create -d bridge prosody 
   fi
-
-  docker-compose up --build &
+  docker-compose build \
+    --build-arg CONTAINER_USER=${USER} \
+    --build-arg CONTAINER_UID=$(id -u) \
+    --build-arg CONTAINER_GID=$(id -g)
+  docker-compose up --remove-orphans &
 }
 
 ##############################################################################
 # Menu
 case "$1" in
-
   up)
     containers/prosody/volume/scripts/animation.sh
-
     createDirectories
     setScriptsPermissions
     startContainers
-    
   ;;
-
   down)
     docker-compose down
   ;;
-
   clean)
     clean
   ;;
-
-  *) printf 'Usage: [up|down|clean|help]\n'
+  *) printf 'Usage: [up|down|clean|help]\n' ;;
 
 esac

@@ -13,7 +13,6 @@ readonly location='NA'
 readonly company='NA'
 ############################################################################################
 # Generate SSL keys
-
 if [ -z ${1} ]; then
     printf 'The service name must be passed by argument\n'
     exit
@@ -114,4 +113,4 @@ if [ ! -e ${cert_path}/server.key ] || [ ! -e ${cert_path}/server.crt ]; then
 fi
 
 # Setting Certs Ownership
-chown -R prosody:prosody ${certs_path}
+chown -R ${CONTAINER_USER}:${CONTAINER_USER} ${certs_path}
