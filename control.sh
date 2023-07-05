@@ -40,9 +40,10 @@ case "$1" in
   down)
     docker-compose down
   ;;
+  prosodyctl) docker exec -it prosody prosody_wrapper ${2} ${3} ${4} ${5} ;;
   clean)
     clean
   ;;
-  *) printf 'Usage: [up|down|clean|help]\n' ;;
+  *) printf 'Usage: [up|down|clean|prosodyctl|help]\n' ;;
 
 esac

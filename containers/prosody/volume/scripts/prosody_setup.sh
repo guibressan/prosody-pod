@@ -7,7 +7,8 @@ readonly hostname="$(su -c 'cat /app/data/tor/prosody/hostname' ${CONTAINER_USER
 readonly data_path='/app/data/prosody'
 ####################
 set_ownership(){
-  chown -R ${CONTAINER_USER}:${CONTAINER_USER} /etc/prosody /usr/lib/prosody /var/lib/prosody /var/log/prosody
+  mkdir -p /run/prosody
+  chown -R ${CONTAINER_USER}:${CONTAINER_USER} /etc/prosody /usr/lib/prosody /var/lib/prosody /var/log/prosody /run/prosody
 }
 remove_localhost_config(){
   if [ -e /etc/prosody/conf.d/*localhost* ]; then

@@ -15,7 +15,8 @@ HiddenServicePort 5281 127.0.0.1:5281
 EOF
 }
 run(){
-  su -c 'tor &' ${CONTAINER_USER}
+  su -c 'tor > /dev/null &' ${CONTAINER_USER}
+  su -c "while ! [ -e ${HIDDEN_SERVICE_PATH}/hostname ]; do sleep 1; done" ${CONTAINER_USER}
 }
 setup(){
   set_config
