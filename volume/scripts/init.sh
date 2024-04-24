@@ -2,7 +2,6 @@
 ####################
 set -e
 ####################
-readonly PROSODY_PORT=5222
 readonly TOR_DATADIR="/volume/data/tor"
 tor_hostname=
 ####################
@@ -10,7 +9,10 @@ setup_tor() {
 	[ -e "${TOR_DATADIR}" ] || mkdir -p "${TOR_DATADIR}"
 	cat << EOF > /etc/tor/torrc
 HiddenServiceDir ${TOR_DATADIR}/prosody
-HiddenServicePort ${PROSODY_PORT} 127.0.0.1:${PROSODY_PORT}
+HiddenServicePort 5222 127.0.0.1:5222
+HiddenServicePort 5269 127.0.0.1:5269
+HiddenServicePort 5280 127.0.0.1:5280
+HiddenServicePort 5281 127.0.0.1:5281
 EOF
 	tor 1>/dev/null &
 	while ! [ -e "${TOR_DATADIR}/prosody/hostname" ]; do
