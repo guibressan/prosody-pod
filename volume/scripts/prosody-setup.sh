@@ -9,6 +9,10 @@ readonly CONFIG_DIR="/volume/config"
 mkdirs() {
 	[ -e "${DATA_PATH}" ] || mkdir -p "${DATA_PATH}"
 }
+set_pid_perm() {
+	[ -e "/run/prosody" ] || mkdir -p "/run/prosody"
+	chown -R prosody:prosody "/run/prosody"
+}
 remove_localhost_config(){
   if [ -e /etc/prosody/conf.d/*localhost* ]; then
       rm -rfv /etc/prosody/conf.avail/*localhost*
@@ -296,6 +300,7 @@ EOF
 }
 setup() {
 	mkdirs
+	set_pid_perm
   remove_localhost_config
   copy_lua_modules
   set_prosody_global_config
