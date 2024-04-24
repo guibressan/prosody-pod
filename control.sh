@@ -36,7 +36,7 @@ down() {
 			printf "stopping prosody\n"
 			sleep 1
 		done
-	'
+	' || true
 	podman stop "${CONTAINER_NAME}"
 }
 prosodyctl() {

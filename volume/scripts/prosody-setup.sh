@@ -260,6 +260,7 @@ certificates = "certs"
 Include "conf.d/*.cfg.lua"
 EOF
   cat << EOF >> /etc/prosody/prosody.cfg.lua
+	run_as_root = true
   data_path = "${DATA_PATH}"
 EOF
 	chown -R prosody:prosody "${DATA_PATH}"

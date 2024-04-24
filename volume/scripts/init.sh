@@ -12,7 +12,7 @@ setup_tor() {
 HiddenServiceDir ${TOR_DATADIR}/prosody
 HiddenServicePort ${PROSODY_PORT} 127.0.0.1:${PROSODY_PORT}
 EOF
-	tor &
+	tor 1>/dev/null &
 	while ! [ -e "${TOR_DATADIR}/prosody/hostname" ]; do
 		printf 'waiting for tor hostname'
 		sleep 1
@@ -29,6 +29,7 @@ init() {
 	setup_tor
 	setup_ssl "${tor_hostname}"
 	setup_prosody
+
 	prosody &
 	local prosody_pid="${!}"
 	printf ${prosody_pid} > /volume/data/prosody.pid
