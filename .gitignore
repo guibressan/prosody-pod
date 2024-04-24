@@ -1,0 +1,4 @@
+.env
+.old
+volume/data
+**/*.swp
