@@ -37,7 +37,7 @@ down() {
 			sleep 1
 		done
 	' || true
-	podman stop "${CONTAINER_NAME}"
+	podman stop "${CONTAINER_NAME}" || true
 }
 prosodyctl() {
 	podman exec ${CONTAINER_NAME} bash -c "prosodyctl ${1}"

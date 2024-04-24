@@ -47,7 +47,7 @@ init() {
 	printf "To create the admin user just insert the following command: \n"
 	printf "<./control.sh prosodyctl \"register admin ${tor_hostname} password\">\n"
 	printf "To create a new normal user just insert the same command, with another username instead of admin\n"
-	printf "Registering the same user twice can be used to change the password (useful in forgotten password)\n"
+	printf "Registering the same user twice can be used to change the password (useful on forgotten password)\n"
 
 	while kill -0 ${prosody_pid} 1>/dev/null 2>&1; do
 		sleep 1
