@@ -48,6 +48,35 @@ clean() {
 	[ "${v}" == "Y" ] || eprintln 'abort!'
 	sudo rm -rf "${RELDIR}/volume/data"
 }
+mk_systemd() {
+	! [ -e "/etc/systemd/system/${CONTAINER_NAME}.service" ] || eprintln "service ${CONTAINER_NAME} already exists"
+	local user="${USER}"
+	sudo bash -c "cat << EOF > /etc/systemd/system/${CONTAINER_NAME}.service
+[Unit]
+Description=Prosody Pod
+After=network.target
+
+[Service]
+Environment=\"PATH=/usr/local/bin:/usr/bin:/bin:${PATH}\"
+User=${user}
+Type=forking
+ExecStart=/bin/bash -c \"cd ${PWD}/${RELDIR}; ./control.sh up\"
+ExecStop=/bin/bash -c \"cd ${PWD}/${RELDIR}; ./control.sh down\"
+Restart=always
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
+EOF
+"
+	sudo systemctl enable "${CONTAINER_NAME}".service
+}
+rm_systemd() {
+	[ -e "/etc/systemd/system/${CONTAINER_NAME}.service" ] || return 0
+	sudo systemctl stop "${CONTAINER_NAME}".service || true
+	sudo systemctl disable "${CONTAINER_NAME}".service
+	sudo rm /etc/systemd/system/"${CONTAINER_NAME}".service
+}
 ####################
 common
 case ${1} in
@@ -56,6 +85,8 @@ case ${1} in
 	down) down ;;
 	prosodyctl) prosodyctl "${2}" ;;
 	clean) clean ;;
+	mk-systemd) mk_systemd ;;
+	rm-systemd) rm_systemd ;;
 	nop) ;;
-	*) eprintln 'usage: < build | up | down | clean | prosodyctl | help >' ;;
+	*) eprintln 'usage: < build | up | down | clean | prosodyctl | mk-systemd | rm-systemd | help >' ;;
 esac
