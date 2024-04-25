@@ -298,6 +298,12 @@ set_prosody_hidden_service_config(){
 EOF
   ln -sf /etc/prosody/conf.avail/${HOSTNAME}.cfg.lua /etc/prosody/conf.d/${HOSTNAME}.cfg.lua
 }
+set_logs() {
+	! [ -e "/var/log/prosody" ] || rm -r /var/log/prosody
+	[ -e "/volume/data/log" ] || mkdir -p /volume/data/log
+	chown -R prosody:prosody /volume/data/log
+	ln -sf /volume/data/log /var/log/prosody
+}
 setup() {
 	mkdirs
 	set_pid_perm
@@ -306,6 +312,7 @@ setup() {
   set_prosody_global_config
   set_prosody_certificate_link
   set_prosody_hidden_service_config
+	set_logs 
 }
 ####################
 setup
